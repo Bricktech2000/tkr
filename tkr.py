@@ -57,11 +57,9 @@ class base_cmd:
 		return idf
 
 	def run(self, itm):
-		print('running...')
 		itm2 = self.tkr.fromIdf(itm.idf)
 		if itm2:
 			itm = itm2.item
-			#https://www.programiz.com/python-programming/dictionary
 			del self.tkr.items[itm2.index]
 		itm.cmd(self)
 		#https://intellipaat.com/community/8780/append-integer-to-beginning-of-list-in-python
@@ -72,11 +70,43 @@ class base_cmd:
 		print(self)
 
 	def __repr__(self):
-		ret = self.fore + self.style + self.name + 's:\n'
+		ret = '' #self.fore + self.style + self.name + 's:\n'
 		for itm in self.tkr.items:
 			if itm.strCmd == self:
 				ret += itm.__repr__() + '\n'
-		return ret
+		return ret[:-1] #remove \n
+
+class todo_cmd(base_cmd):
+	def __init__(self, *args):
+		super().__init__(*args)
+
+	#https://www.tutorialspoint.com/How-to-override-class-methods-in-Python
+	def run(self, itm):
+		itm2 = self.tkr.fromIdf(itm.idf)
+		if itm2:
+			itm = itm2.item
+			del self.tkr.items[itm2.index]
+		itm.cmd(self)
+
+		self.tkr.items.append(itm)
+		self.print()
+
+class do_cmd(base_cmd):
+	def __init__(self, *args):
+		super().__init__(*args)
+
+	def run(self, itm):
+		itm2 = self.tkr.fromIdf(itm.idf)
+		if itm2:
+			itm = itm2.item
+			del self.tkr.items[itm2.index]
+		itm.cmd(self.tkr.cmds['todo'])
+
+		self.tkr.items.insert(0, itm)
+		self.print()
+
+	def print(self):
+		print(self.tkr.cmds['todo'])
 
 """
 class todo_cmd(base_cmd):
@@ -106,7 +136,6 @@ class tkr:
 			self._run(argv)
 
 	def _run(self, argv):
-		print('tkr running...')
 		for i in range(len(argv)):
 			pluralCmd = self.cmds.get(argv[i][:-1], None) and argv[i][-1] == 's'
 			if pluralCmd:
@@ -116,7 +145,14 @@ class tkr:
 				idfCmd = self.cmds[argv[i]]
 				i += 1
 				if i >= len(argv) or self.cmds.get(argv[i], None):
-					idf = self.cmds['todo'].list[0]
+					idf = None
+					for itm in self.items:
+						if itm.strCmd == self.cmds['todo']:
+							idf = itm.idf
+							break
+					if idf == None:
+						print(Fore.RED + Style.BRIGHT + 'Could not complete operation because the `todo` list is empty.')
+						return
 				else:
 					idf = argv[i]
 				itm = self.fromIdf(idf)
@@ -135,7 +171,6 @@ class tkr:
 			file.write(json2)
 
 	def loadItems(self, obj):
-		print(obj)
 		self.items = []
 		for _item in obj:
 			idfCmd, idf, strCmd, string = _item
@@ -171,8 +206,8 @@ if __name__ == '__main__':
 	#https://pypi.org/project/colorama/
 	tkr([
 		base_cmd('idea', Fore.CYAN, Style.NORMAL),
-		#todo_cmd('todo', Fore.WHITE, Style.NORMAL),
-		#do_cmd('do', Fore.WHITE, Style.BRIGHT),
-		base_cmd('done', Fore.GREEN, Style.DIM),
+		todo_cmd('todo', Fore.WHITE, Style.NORMAL),
+		do_cmd('do', Fore.WHITE, Style.BRIGHT),
+		base_cmd('done', Fore.GREEN, Style.BRIGHT),
 		base_cmd('skip', Fore.RED, Style.DIM),
 	], 'tkr.json').run(sys.argv)
