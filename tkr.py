@@ -52,8 +52,7 @@ class base_cmd:
 				#https://stackoverflow.com/questions/4481724/convert-a-list-of-characters-into-a-string
 				#https://stackoverflow.com/questions/2823316/generate-a-random-letter-in-python
 				idf = ''.join([chr(random.randrange(97, 97 + 26)) for i in range(n)])
-				#if not self.tkr.list.get(idf, None): break
-				break
+				if not self.tkr.fromIdf(idf): break
 		return idf
 
 	def run(self, itm):
@@ -108,12 +107,6 @@ class do_cmd(base_cmd):
 	def print(self):
 		print(self.tkr.cmds['todo'])
 
-"""
-class todo_cmd(base_cmd):
-  ...
-class do_cmd(base_cmd):
-  ...
-"""
 
 class tkr:
 	def __init__(self, cmds, filename):
@@ -141,7 +134,6 @@ class tkr:
 			if pluralCmd:
 				self.cmds[argv[i][:-1]].print()
 			if self.cmds.get(argv[i], None):
-				#if pluralCmd: argv[i] = argv[i][:-1]
 				idfCmd = self.cmds[argv[i]]
 				i += 1
 				if i >= len(argv) or self.cmds.get(argv[i], None):
@@ -191,15 +183,6 @@ class tkr:
 				ret.index = index
 				return ret
 		return None
-
-		#parse args
-		#read from JSON
-		#self.idfs = //get idfs from JSON
-		#get idf
-		#idf = self.cmds[...].idf(idf)
-		#self.cmds[...].run(idf)
-		#write to JSON
-		#...
 
 
 if __name__ == '__main__':
