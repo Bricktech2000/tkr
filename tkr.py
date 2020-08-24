@@ -1,4 +1,5 @@
 import sys
+import json
 
 import colorama
 from colorama import init, Fore, Style
@@ -10,9 +11,14 @@ class base_cmd:
 		self.name = name
 		self.fore = fore
 		self.style = style
+
 	def tkr(self, tkr):
 		self.tkr = tkr
 		return self
+	def list(self, list):
+		self.list = list
+		return self
+
 	def idf(self, idf):
 		n = 2
 		if idf.length != n:
@@ -20,6 +26,7 @@ class base_cmd:
 				idf = [rndChr()] * n
 				if not self.tkr.idfs.contains(idf): break
 		return idf
+
 	def run(self, idf):
 		print('running...')
 
@@ -35,14 +42,41 @@ class tkr:
 		self.cmds = {}
 		for cmd in cmds:
 			self.cmds[cmd.name] = cmd.tkr(tkr)
+		with open('tkr.json', 'w+') as file:
+			json1 = file.read()
+			if json1 == '': json1 = '{}'
+			obj = json.loads(json1)
+			self.storeObject(obj)
+
 	def run(self, argv):
 		if len(argv) == 1:
 			print('TODO: interactive shell')
 		else:
 			self._run(argv)
+
 	def _run(self, argv):
 		print('tkr running...')
 		print('self.cmds', self.cmds)
+
+		# run
+		self.terminate()
+
+	def terminate(self):
+		with open('tkr.json', 'w') as file:
+			obj2 = self.genObject()
+			json2 = json.dumps(obj2)
+			file.write(json2)
+
+	def genObject(self):
+		obj2 = {}
+		for name in self.cmds.keys():
+			obj2[name] = self.cmds[name].list
+		return obj2
+
+	def storeObject(self, obj):
+		obj = {}
+		for name in self.cmds.keys():
+			self.cmds[name].list = obj.get(name, [])
 		#parse args
 		#read from JSON
 		#self.idfs = //get idfs from JSON
