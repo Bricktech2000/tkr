@@ -58,12 +58,14 @@ class base_cmd:
 
 	def run(self, itm):
 		print('running...')
-		if itm2 := self.tkr.items.get(itm.idf, None):
-			itm = itm2
+		itm2 = self.tkr.fromIdf(itm.idf)
+		if itm2:
+			itm = itm2.item
 			#https://www.programiz.com/python-programming/dictionary
-			del self.tkr.items[itm.idf]
+			del self.tkr.items[itm2.index]
 		itm.cmd(self)
-		self.tkr.items[itm.idf] = itm
+		#https://intellipaat.com/community/8780/append-integer-to-beginning-of-list-in-python
+		self.tkr.items.insert(0, itm)
 		self.print()
 
 	def print(self):
@@ -71,7 +73,7 @@ class base_cmd:
 
 	def __repr__(self):
 		ret = self.fore + self.style + self.name + 's:\n'
-		for itm in self.tkr.items.values():
+		for itm in self.tkr.items:
 			if itm.strCmd == self:
 				ret += itm.__repr__() + '\n'
 		return ret
@@ -117,10 +119,11 @@ class tkr:
 					idf = self.cmds['todo'].list[0]
 				else:
 					idf = argv[i]
-				itm = self.items.get(idf, None)
+				itm = self.fromIdf(idf)
 				if itm == None:
 					string = idf
 					itm = item(idfCmd, None, idfCmd, string).tkr(self)
+				else: itm = itm.item
 				idfCmd.run(itm)
 		
 		self.stop()
@@ -133,19 +136,26 @@ class tkr:
 
 	def loadItems(self, obj):
 		print(obj)
-		self.items = {}
+		self.items = []
 		for _item in obj:
-			print(_item)
 			idfCmd, idf, strCmd, string = _item
-			self.items[idf] = item(self.cmds[idfCmd], idf, self.cmds[strCmd], string)
+			self.items.append(item(self.cmds[idfCmd], idf, self.cmds[strCmd], string))
 	
 	def dumpItems(self):
 		obj2 = []
-		for idf in self.items.keys():
-			item = self.items[idf]
-			_item = (item.idfCmd.name, idf, item.strCmd.name, item.string)
+		for item in self.items:
+			_item = (item.idfCmd.name, item.idf, item.strCmd.name, item.string)
 			obj2.append(_item)
 		return obj2
+	
+	def fromIdf(self, idf):
+		ret = lambda: None
+		for index, item in enumerate(self.items):
+			if item.idf == idf:
+				ret.item = item
+				ret.index = index
+				return ret
+		return None
 
 		#parse args
 		#read from JSON
