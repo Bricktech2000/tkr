@@ -27,7 +27,7 @@ class item:
 		return self
 
 	def __repr__(self):
-		return (self.idfCmd.fore + self.idfCmd.style + self.idf + ': ' +
+		return (Style.RESET_ALL + self.idf + self.idfCmd.fore + self.idfCmd.style + ': ' +
 			self.strCmd.fore + self.strCmd.style + self.string)
 
 
@@ -134,6 +134,7 @@ class tkr:
 		self.cmds = {}
 		for cmd in cmds:
 			self.cmds[cmd.name] = cmd.tkr(self)
+		self.mainCmd = self.cmds['todo']
 		self.filename = filename
 		_file = open(self.filename, 'a+')
 		_file.close()
@@ -147,7 +148,7 @@ class tkr:
 		if len(argv) == 1:
 			try:
 				while True:
-					print(Fore.WHITE + Style.BRIGHT + 'tkr> ', end='')
+					print(Style.RESET_ALL + 'tkr' + self.mainCmd.fore + self.mainCmd.style + '> ', end='')
 					args = input()
 					argv = self.parseArgs(args)
 					self._run(argv)
@@ -183,7 +184,15 @@ class tkr:
 		i = 0
 		while i < len(argv):
 			pluralCmd = self.cmds.get(argv[i][:-1], None) and argv[i][-1] == 's'
-			if pluralCmd:
+			if argv[i] == 'main':
+				i += 1
+				if i < len(argv) and self.cmds.get(argv[i], None):
+					self.mainCmd = self.cmds[argv[i]]
+					self.mainCmd.print()
+				else:
+					print(self.mainCmd.fore + self.mainCmd.style + 'Main list: ' + self.mainCmd.name)
+					i -= 1
+			elif pluralCmd:
 				self.cmds[argv[i][:-1]].print()
 			elif self.cmds.get(argv[i], None):
 				idfCmd = self.cmds[argv[i]]
@@ -191,11 +200,11 @@ class tkr:
 				if i >= len(argv) or self.cmds.get(argv[i], None):
 					idf = None
 					for itm in self.items:
-						if itm.strCmd == self.cmds['todo']:
+						if itm.strCmd == self.mainCmd:
 							idf = itm.idf
 							break
 					if idf == None:
-						print(Fore.RED + Style.BRIGHT + 'Error: todo is empty.')
+						print(Fore.RED + Style.BRIGHT + 'Error: Main list is empty.')
 						return
 				else:
 					idf = argv[i]
