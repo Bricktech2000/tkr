@@ -28,12 +28,6 @@ class item:
 			self.strCmd.fore + self.strCmd.style + self.string)
 
 
-
-
-
-
-
-
 class base_cmd:
 	def __init__(self, name, fore, style):
 		self.name = name
@@ -73,7 +67,7 @@ class base_cmd:
 		for itm in self.tkr.items:
 			if itm.strCmd == self:
 				ret += itm.__repr__() + '\n'
-		return ret[:-1] #remove \n
+		return ret #[:-1] #remove \n
 
 class todo_cmd(base_cmd):
 	def __init__(self, *args):
@@ -124,16 +118,47 @@ class tkr:
 
 	def run(self, argv):
 		if len(argv) == 1:
-			print('TODO: interactive shell')
+			try:
+				while True:
+					print(Fore.WHITE + Style.BRIGHT + 'tkr> ', end='')
+					args = input()
+					argv = self.parseArgs(args)
+					self._run(argv)
+			except KeyboardInterrupt:
+				return
 		else:
 			self._run(argv)
 
+	def parseArgs(self, args):
+		argv = []
+		acc = ''
+		i = 0
+		while i < len(args):
+			if args[i] == '"':
+				if acc: argv.append(acc)
+				acc = ''
+				i += 1
+				while args[i] != '"':
+					acc += args[i]
+					i += 1
+				if acc: argv.append(acc)
+				acc = ''
+			elif args[i] == ' ':
+				argv.append(acc)
+				acc = ''
+			else: acc += args[i]
+			i += 1
+		if acc: argv.append(acc)
+		return argv
+
 	def _run(self, argv):
-		for i in range(len(argv)):
+		#https://stackoverflow.com/questions/14785495/how-to-change-index-of-a-for-loop
+		i = 0
+		while i < len(argv):
 			pluralCmd = self.cmds.get(argv[i][:-1], None) and argv[i][-1] == 's'
 			if pluralCmd:
 				self.cmds[argv[i][:-1]].print()
-			if self.cmds.get(argv[i], None):
+			elif self.cmds.get(argv[i], None):
 				idfCmd = self.cmds[argv[i]]
 				i += 1
 				if i >= len(argv) or self.cmds.get(argv[i], None):
@@ -153,7 +178,10 @@ class tkr:
 					itm = item(idfCmd, None, idfCmd, string).tkr(self)
 				else: itm = itm.item
 				idfCmd.run(itm)
-		
+			else:
+				print(Fore.RED + Style.BRIGHT + 'Could not find command: ' + argv[i])
+				return
+			i += 1
 		self.stop()
 
 	def stop(self):
