@@ -54,14 +54,14 @@ class base_cmd:
 
 	def run(self, itm):
 		itm2 = self.tkr.fromIdf(itm.idf)
-		itm2ItemStrCmd = itm2.item.strCmd
 		if itm2:
 			itm = itm2.item
 			del self.tkr.items[itm2.index]
+			itm2ItemStrCmd = itm2.item.strCmd
+			itm2ItemStrCmd.print()
 		itm.cmd(self)
 		#https://intellipaat.com/community/8780/append-integer-to-beginning-of-list-in-python
 		self.tkr.items.insert(0, itm)
-		itm2ItemStrCmd.print()
 		print(itm)
 		print()
 
@@ -82,14 +82,14 @@ class todo_cmd(base_cmd):
 	#https://www.tutorialspoint.com/How-to-override-class-methods-in-Python
 	def run(self, itm):
 		itm2 = self.tkr.fromIdf(itm.idf)
-		itm2ItemStrCmd = itm2.item.strCmd
 		if itm2:
 			itm = itm2.item
 			del self.tkr.items[itm2.index]
+			itm2ItemStrCmd = itm2.item.strCmd
+			itm2ItemStrCmd.print()
 		itm.cmd(self)
 
 		self.tkr.items.append(itm)
-		itm2ItemStrCmd.print()
 		print(itm)
 		print()
 
@@ -99,19 +99,34 @@ class do_cmd(base_cmd):
 
 	def run(self, itm):
 		itm2 = self.tkr.fromIdf(itm.idf)
-		itm2ItemStrCmd = itm2.item.strCmd
 		if itm2:
 			itm = itm2.item
 			del self.tkr.items[itm2.index]
+			itm2ItemStrCmd = itm2.item.strCmd
+			itm2ItemStrCmd.print()
 		itm.cmd(self.tkr.cmds['todo'])
 
 		self.tkr.items.insert(0, itm)
-		itm2ItemStrCmd.print()
 		print(itm)
 		print()
 
 	def print(self):
 		print(self.tkr.cmds['todo'])
+
+class list_cmd(base_cmd):
+	def __init__(self, *args):
+		super().__init__(*args)
+
+	def run(self, itm):
+		if itm.strCmd != self.tkr.cmds['todo']:
+			print(Fore.RED + Style.BRIGHT + 'Error: list shouldn\'t take any arguments.')
+			return
+		
+		for cmd in self.tkr.cmds.keys():
+			if cmd != 'do': self.tkr.cmds[cmd].print()
+
+	def print(self):
+		return
 
 
 class tkr:
@@ -180,7 +195,7 @@ class tkr:
 							idf = itm.idf
 							break
 					if idf == None:
-						print(Fore.RED + Style.BRIGHT + 'Could not complete operation because the `todo` list is empty.')
+						print(Fore.RED + Style.BRIGHT + 'Error: todo is empty.')
 						return
 				else:
 					idf = argv[i]
@@ -191,7 +206,7 @@ class tkr:
 				else: itm = itm.item
 				idfCmd.run(itm)
 			else:
-				print(Fore.RED + Style.BRIGHT + 'Could not find command: ' + argv[i])
+				print(Fore.RED + Style.BRIGHT + 'Error: Unknown command: ' + argv[i])
 				return
 			i += 1
 		self.stop()
@@ -228,9 +243,11 @@ class tkr:
 if __name__ == '__main__':
 	#https://pypi.org/project/colorama/
 	tkr([
-		base_cmd('idea', Fore.BLUE, Style.NORMAL),
 		todo_cmd('todo', Fore.GREEN, Style.BRIGHT),
-		do_cmd  ('do',   Fore.GREEN, Style.BRIGHT),
-		base_cmd('done', Fore.WHITE, Style.NORMAL),
+		base_cmd('idea', Fore.BLUE, Style.NORMAL),
 		base_cmd('skip', Fore.YELLOW, Style.NORMAL),
+		base_cmd('done', Fore.WHITE, Style.NORMAL),
+
+		do_cmd  ('do',   Fore.MAGENTA, Style.NORMAL),
+		list_cmd('list', '', ''),
 	], 'tkr.json').run(sys.argv)
