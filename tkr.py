@@ -1,10 +1,13 @@
+import os
 import sys
 import json
 import random
 
 import colorama
 from colorama import init, Fore, Style
-init(convert=True)
+#https://stackoverflow.com/questions/1325581/how-do-i-check-if-im-running-on-windows-in-python
+if os.name == 'nt': init(convert=True)
+else: init()
 
 
 class item:
@@ -225,9 +228,9 @@ class tkr:
 if __name__ == '__main__':
 	#https://pypi.org/project/colorama/
 	tkr([
-		base_cmd('idea', Fore.CYAN, Style.NORMAL),
-		todo_cmd('todo', Fore.WHITE, Style.NORMAL),
-		do_cmd('do', Fore.WHITE, Style.BRIGHT),
-		base_cmd('done', Fore.GREEN, Style.BRIGHT),
-		base_cmd('skip', Fore.RED, Style.DIM),
+		base_cmd('idea', Fore.BLUE, Style.NORMAL),
+		todo_cmd('todo', Fore.GREEN, Style.BRIGHT),
+		do_cmd  ('do',   Fore.GREEN, Style.BRIGHT),
+		base_cmd('done', Fore.WHITE, Style.NORMAL),
+		base_cmd('skip', Fore.YELLOW, Style.NORMAL),
 	], 'tkr.json').run(sys.argv)
