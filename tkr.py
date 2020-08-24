@@ -51,13 +51,16 @@ class base_cmd:
 
 	def run(self, itm):
 		itm2 = self.tkr.fromIdf(itm.idf)
+		itm2ItemStrCmd = itm2.item.strCmd
 		if itm2:
 			itm = itm2.item
 			del self.tkr.items[itm2.index]
 		itm.cmd(self)
 		#https://intellipaat.com/community/8780/append-integer-to-beginning-of-list-in-python
 		self.tkr.items.insert(0, itm)
-		self.print()
+		itm2ItemStrCmd.print()
+		print(itm)
+		print()
 
 	def print(self):
 		print(self)
@@ -76,13 +79,16 @@ class todo_cmd(base_cmd):
 	#https://www.tutorialspoint.com/How-to-override-class-methods-in-Python
 	def run(self, itm):
 		itm2 = self.tkr.fromIdf(itm.idf)
+		itm2ItemStrCmd = itm2.item.strCmd
 		if itm2:
 			itm = itm2.item
 			del self.tkr.items[itm2.index]
 		itm.cmd(self)
 
 		self.tkr.items.append(itm)
-		self.print()
+		itm2ItemStrCmd.print()
+		print(itm)
+		print()
 
 class do_cmd(base_cmd):
 	def __init__(self, *args):
@@ -90,13 +96,16 @@ class do_cmd(base_cmd):
 
 	def run(self, itm):
 		itm2 = self.tkr.fromIdf(itm.idf)
+		itm2ItemStrCmd = itm2.item.strCmd
 		if itm2:
 			itm = itm2.item
 			del self.tkr.items[itm2.index]
 		itm.cmd(self.tkr.cmds['todo'])
 
 		self.tkr.items.insert(0, itm)
-		self.print()
+		itm2ItemStrCmd.print()
+		print(itm)
+		print()
 
 	def print(self):
 		print(self.tkr.cmds['todo'])
