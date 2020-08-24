@@ -93,5 +93,12 @@ if __name__ == '__main__':
 
 
 
-
+{
+  <list>: {
+    <idf>: (<from>, <message>),
+    <idf>: (<from>, <message>),
+    ...
+  },
+  ...
+}
 
