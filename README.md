@@ -7,8 +7,8 @@ A Python program to track ideas, issues and fixes in any project.
 Requirements
 ------------
 
-* Windows or Linux (untested on MacOS)
-* Python 3.0 or later
+* Windows or Linux (not tested on MacOS)
+* Python 3 or later (not tested on Python 2)
 
 
 Dependencies
@@ -36,13 +36,13 @@ tkr is a command / program to track ideas, todos, skiped ideas and tasks that ar
     $ todo "add README.md"
     > ot: "add README.md" (in green, 'todo' list)
     ```
-* See the items in a list
+* See the items in a list: 
     `<list_name>s`
     ```
     $ todos
     > ot: "add README.md" (in green, 'todo' list)
     ``` 
-* Move an item to a different list:
+* Move an item to a different list: 
     `<list_name> <identifier>`
     ```
     $ done ot (note that 'ot' is the identifier, outputted above)
@@ -50,7 +50,7 @@ tkr is a command / program to track ideas, todos, skiped ideas and tasks that ar
     $ dones
     > ot: "add README.md" (in white, 'done' list)
     ```
-* Select the main list:
+* Select the main list: 
     `main <list_name>`
     ```
     $ main ideas
@@ -61,7 +61,7 @@ tkr is a command / program to track ideas, todos, skiped ideas and tasks that ar
     $ idea "awesome idea"
     > gu: "awesome idea" (in blue, 'idea' list)
     ```
-* Move an item from the main list to a different list:
+* Move an item from the main list to a different list: 
     `<list_name>`
     ```
     $ skip (move from 'idea' to 'skip')
@@ -71,7 +71,7 @@ tkr is a command / program to track ideas, todos, skiped ideas and tasks that ar
     $ todo (move from 'skip' to 'todo')
     > gu: "awesome idea" (in yellow, 'todo' list)
     ```
-* Exit the Program
+* Exit the Program: 
     `Ctrl + C`
     ```
     $ ^C
